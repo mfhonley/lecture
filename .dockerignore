@@ -1,0 +1,15 @@
+# Не копировать в образ (как в типичных Python-проектах)
+.env
+.venv
+venv
+__pycache__
+*.pyc
+.pytest_cache
+.coverage
+htmlcov
+.git
+.gitignore
+*.md
+!README.md
+.poetry
+poetry.toml

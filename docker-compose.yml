@@ -1,0 +1,17 @@
+# Только приложение. MongoDB — в облаке (Atlas и т.д.), MONGO_URI задаётся в .env.
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: boilerplate-app
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
