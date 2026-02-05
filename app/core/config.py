@@ -23,6 +23,18 @@ class Settings(BaseSettings):
     # Логирование
     LOG_LEVEL: str = "INFO"
 
+    # JWT
+    JWT_SECRET: str = "change-me-in-production"
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 дней
+
+    # GitHub OAuth
+    GITHUB_CLIENT_ID: str = ""
+    GITHUB_CLIENT_SECRET: str = ""
+
+    # Frontend URL для редиректа после OAuth
+    FRONTEND_URL: str = "http://localhost:3000"
+
     model_config = SettingsConfigDict(
         env_file=".env",
         case_sensitive=False,

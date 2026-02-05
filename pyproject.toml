@@ -12,6 +12,10 @@ pymongo = "^4.10.0"
 pydantic = "^2.0.0"
 pydantic-settings = "^2.0.0"
 python-dotenv = "^1.0.0"
+python-jose = {extras = ["cryptography"], version = "^3.5.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+httpx = "^0.28.1"
+python-multipart = "^0.0.22"
 
 [build-system]
 requires = ["poetry-core"]

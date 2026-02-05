@@ -31,6 +31,11 @@ def get_items_collection() -> Collection:
     return get_db()["items"]
 
 
+def get_users_collection() -> Collection:
+    """Коллекция users для авторизации."""
+    return get_db()["users"]
+
+
 def connect_to_mongo() -> None:
     """Подключиться к MongoDB. Вызывается в lifespan при старте."""
     global _client  # noqa: PLW0603
