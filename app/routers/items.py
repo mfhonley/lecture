@@ -5,8 +5,8 @@ CRUD для ресурса items.
 Конвертация doc ↔ Pydantic — здесь или в сервисе.
 """
 from bson import ObjectId
+from bson.errors import InvalidId
 from fastapi import APIRouter, HTTPException
-from pymongo.errors import InvalidId
 
 from app.core.database import get_items_collection
 from app.schemas.common import SuccessResponse
