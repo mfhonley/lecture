@@ -3,6 +3,7 @@ name = "backend-boilerplate"
 version = "0.1.0"
 description = "Бойлерплейт бэкенда: FastAPI + Poetry + MongoDB (в облаке)"
 readme = "README.md"
+package-mode = false
 
 [tool.poetry.dependencies]
 python = "^3.11"
