@@ -23,10 +23,14 @@ class Settings(BaseSettings):
     # Логирование
     LOG_LEVEL: str = "INFO"
 
-    # JWT
+    # JWT Access Token
     JWT_SECRET: str = "change-me-in-production"
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRE_MINUTES: int = 60 * 24 * 7  # 7 дней
+    JWT_EXPIRE_MINUTES: int = 15  # 15 минут
+
+    # JWT Refresh Token
+    JWT_REFRESH_SECRET: str = "change-me-refresh-in-production"
+    JWT_REFRESH_EXPIRE_DAYS: int = 30  # 30 дней
 
     # GitHub OAuth
     GITHUB_CLIENT_ID: str = ""
@@ -34,6 +38,13 @@ class Settings(BaseSettings):
 
     # Frontend URL для редиректа после OAuth
     FRONTEND_URL: str = "http://localhost:3000"
+
+    # S3 / MinIO
+    S3_ENDPOINT: str = ""       # http://localhost:9000 для MinIO
+    S3_ACCESS_KEY: str = ""
+    S3_SECRET_KEY: str = ""
+    S3_BUCKET: str = "uploads"
+    S3_REGION: str = "us-east-1"
 
     model_config = SettingsConfigDict(
         env_file=".env",

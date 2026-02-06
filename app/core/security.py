@@ -1,5 +1,5 @@
 """
-Безопасность: JWT токены и хеширование паролей.
+Безопасность: JWT токены (access + refresh) и хеширование паролей.
 """
 from datetime import datetime, timedelta, timezone
 
@@ -25,29 +25,54 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
     return pwd_context.verify(plain_password, hashed_password)
 
 
-def create_access_token(data: dict, expires_delta: timedelta | None = None) -> str:
-    """Создать JWT токен."""
+def create_access_token(data: dict) -> str:
+    """Создать короткоживущий access token (15 мин по умолчанию)."""
     to_encode = data.copy()
-    expire = datetime.now(timezone.utc) + (
-        expires_delta or timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
-    )
-    to_encode.update({"exp": expire})
+    expire = datetime.now(timezone.utc) + timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
+    to_encode.update({"exp": expire, "type": "access"})
     return jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
 
 
-def decode_token(token: str) -> dict | None:
-    """Декодировать JWT токен. Возвращает None при ошибке."""
+def create_refresh_token(data: dict) -> str:
+    """Создать долгоживущий refresh token (30 дней по умолчанию)."""
+    to_encode = data.copy()
+    expire = datetime.now(timezone.utc) + timedelta(days=settings.JWT_REFRESH_EXPIRE_DAYS)
+    to_encode.update({"exp": expire, "type": "refresh"})
+    return jwt.encode(to_encode, settings.JWT_REFRESH_SECRET, algorithm=settings.JWT_ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict | None:
+    """Декодировать access token. Возвращает None при ошибке."""
     try:
-        return jwt.decode(
-            token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
-        )
+        payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+        if payload.get("type") != "access":
+            return None
+        return payload
     except JWTError:
         return None
 
 
+def decode_refresh_token(token: str) -> dict | None:
+    """Декодировать refresh token. Возвращает None при ошибке."""
+    try:
+        payload = jwt.decode(token, settings.JWT_REFRESH_SECRET, algorithms=[settings.JWT_ALGORITHM])
+        if payload.get("type") != "refresh":
+            return None
+        return payload
+    except JWTError:
+        return None
+
+
+def create_token_pair(user_id: str) -> tuple[str, str]:
+    """Создать пару access + refresh токенов."""
+    access = create_access_token({"sub": user_id})
+    refresh = create_refresh_token({"sub": user_id})
+    return access, refresh
+
+
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
     """
-    Dependency для получения текущего пользователя из JWT.
+    Dependency для получения текущего пользователя из JWT access token.
     Возвращает документ пользователя из MongoDB.
     """
     credentials_exception = HTTPException(
@@ -56,7 +81,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
         headers={"WWW-Authenticate": "Bearer"},
     )
 
-    payload = decode_token(token)
+    payload = decode_access_token(token)
     if payload is None:
         raise credentials_exception
 

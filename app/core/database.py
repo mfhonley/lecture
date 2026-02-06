@@ -36,6 +36,16 @@ def get_users_collection() -> Collection:
     return get_db()["users"]
 
 
+def get_resumes_collection() -> Collection:
+    """Коллекция resumes."""
+    return get_db()["resumes"]
+
+
+def get_portfolios_collection() -> Collection:
+    """Коллекция portfolios."""
+    return get_db()["portfolios"]
+
+
 def connect_to_mongo() -> None:
     """Подключиться к MongoDB. Вызывается в lifespan при старте."""
     global _client  # noqa: PLW0603

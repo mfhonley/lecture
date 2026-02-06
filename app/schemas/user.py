@@ -11,7 +11,7 @@ class UserCreate(BaseModel):
 
     email: EmailStr
     password: str = Field(min_length=8)
-    name: str | None = None
+    full_name: str | None = None
 
 
 class UserLogin(BaseModel):
@@ -26,20 +26,23 @@ class User(BaseModel):
 
     id: str
     email: str
-    name: str | None = None
+    full_name: str | None = None
     avatar_url: str | None = None
     provider: str  # "email" | "github"
+    subscription_tier: str = "free"  # "free" | "pro" | "enterprise"
+    last_login: datetime | None = None
     created_at: datetime
 
 
 class Token(BaseModel):
-    """JWT токен."""
+    """Пара JWT токенов."""
 
     access_token: str
+    refresh_token: str
     token_type: str = "bearer"
 
 
-class TokenData(BaseModel):
-    """Данные из токена."""
+class RefreshRequest(BaseModel):
+    """Запрос на обновление токенов."""
 
-    user_id: str
+    refresh_token: str
